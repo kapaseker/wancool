@@ -1,4 +1,4 @@
-package com.xetom.wancool.api
+package com.xetom.wancool.http
 
 import io.ktor.client.*
 
