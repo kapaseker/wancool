@@ -3,8 +3,8 @@ package com.xetom.wancool.api
 import com.xetom.wancool.ext.isOk
 import com.xetom.wancool.http.getHttpClient
 import com.xetom.wancool.load.LoadData
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 

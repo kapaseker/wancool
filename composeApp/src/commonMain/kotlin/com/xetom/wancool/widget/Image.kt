@@ -3,11 +3,7 @@ package com.xetom.wancool.widget
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
@@ -15,8 +11,8 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import org.jetbrains.compose.resources.painterResource
 import wancool.composeapp.generated.resources.Res
-import wancool.composeapp.generated.resources.cloud_download
 import wancool.composeapp.generated.resources.cloud
+import wancool.composeapp.generated.resources.cloud_download
 
 @Composable
 fun OnlineImage(
