@@ -6,13 +6,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,7 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.xetom.wancool.page.dog.ui.DogListScreen
+import com.xetom.wancool.LocalNavController
+import com.xetom.wancool.load.isLoading
+import com.xetom.wancool.nav.DogNav
+import com.xetom.wancool.page.dog.home_list.ui.DogListScreen
 import com.xetom.wancool.page.home.business.HomeViewModel
 import com.xetom.wancool.style.LocalColorStyle
 import kotlinx.collections.immutable.ImmutableList
@@ -30,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import wancool.composeapp.generated.resources.Res
+import wancool.composeapp.generated.resources.dog_bone
 import wancool.composeapp.generated.resources.three_dots
 
 
@@ -71,48 +77,82 @@ fun HomePage(
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
-            Box(
+            Image(
                 modifier = Modifier.fillMaxHeight().aspectRatio(1f).clip(CircleShape).clickable {
 
-            }.padding(14.dp)) {
-                Image(
-                    modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(Res.drawable.three_dots),
-                    contentDescription = null,
-                )
-            }
+                }.padding(14.dp),
+                painter = painterResource(Res.drawable.three_dots),
+                contentDescription = null,
+            )
         }
 
-        var dogsList by remember { mutableStateOf<ImmutableList<String>>(persistentListOf<String>()) }
-        var dogSelected by remember { mutableIntStateOf(-1) }
+        var dogsList by rememberSaveable { mutableStateOf<ImmutableList<String>>(persistentListOf<String>()) }
+        var dogSelectIndex by rememberSaveable { mutableIntStateOf(-1) }
+        var dogSelectedMainBreed by rememberSaveable { mutableStateOf("") }
+
+        val dogListState = rememberLazyListState()
+        val navController = LocalNavController.current
+
+        fun goDogPage(main: String,sub: String) {
+            navController.navigate(DogNav.make(DogNav.Arg(main, sub)))
+        }
 
         when (selectTab) {
-            0 -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Row(modifier = Modifier.fillMaxSize()) {
-                        LazyColumn(modifier = Modifier.weight(1f).fillMaxSize()) {
-                            itemsIndexed(items = breeds.keys.toList()) { index, it ->
-                                Column(modifier = Modifier.clickable {
-                                    breeds[it]?.let { items ->
-                                        dogSelected = index
-                                        dogsList = items.toImmutableList()
-                                    } ?: run {
 
-                                    }
-                                }) {
-                                    Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                                        Text(text = it, color = LocalColorStyle.current.primary, fontSize = 24.sp)
-                                        if (dogSelected == index) {
-                                            Spacer(Modifier.size(16.dp).clip(CircleShape).background(LocalColorStyle.current.primary).align(Alignment.CenterEnd))
+            0 -> {
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (breeds.load.isLoading()) {
+
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(0.4f).height(4.dp).align(Alignment.Center), color = LocalColorStyle.current.primary)
+
+                    } else {
+
+                        Row(modifier = Modifier.fillMaxSize()) {
+
+                            LazyColumn(modifier = Modifier.weight(1f).fillMaxSize(), state = dogListState) {
+                                itemsIndexed(items = breeds.breeds.keys.toList()) { index, it ->
+                                    Column(modifier = Modifier.height(48.dp).fillMaxWidth().clickable {
+
+                                        dogSelectIndex = index
+                                        dogSelectedMainBreed = it
+
+                                        breeds.breeds[it].takeIf { it != null && it.isNotEmpty() }?.let { items ->
+                                            dogsList = items.toImmutableList()
+                                        } ?: run {
+                                            goDogPage(main = it, sub = "")
                                         }
+                                    }) {
+                                        Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp)) {
+
+                                            Text(
+                                                text = it,
+                                                color = LocalColorStyle.current.primary,
+                                                fontSize = 24.sp,
+                                                modifier = Modifier.align(Alignment.CenterStart)
+                                            )
+
+                                            if (dogSelectIndex == index) {
+                                                Image(
+                                                    painter = painterResource(Res.drawable.dog_bone),
+                                                    modifier = Modifier.size(32.dp).align(Alignment.CenterEnd),
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        }
+                                        Spacer(
+                                            modifier = Modifier.fillMaxWidth().height(1.dp).padding(horizontal = 16.dp).background(LocalColorStyle.current.divider)
+                                        )
                                     }
-                                    Spacer(modifier = Modifier.fillMaxWidth().height(1.dp).padding(horizontal = 16.dp).background(LocalColorStyle.current.divider))
                                 }
                             }
-                        }
-                        if (dogsList.isNotEmpty()) {
-                            Spacer(modifier = Modifier.width(2.dp).fillMaxHeight().background(LocalColorStyle.current.divider))
-                            DogListScreen(modifier = Modifier.weight(2f).fillMaxSize(), dogs = dogsList)
+
+                            if (dogsList.isNotEmpty()) {
+                                Spacer(modifier = Modifier.width(2.dp).fillMaxHeight().background(LocalColorStyle.current.divider))
+                                DogListScreen(modifier = Modifier.weight(2f).fillMaxSize(), dogs = dogsList) {
+                                    goDogPage(main = dogSelectedMainBreed, sub = dogsList[it])
+                                }
+                            }
                         }
                     }
                 }

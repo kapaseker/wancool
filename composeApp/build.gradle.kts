@@ -53,6 +53,11 @@ kotlin {
             implementation(libs.kotlinx.serialization)
 
             implementation(libs.kotlinx.collections.immutable)
+
+            implementation(libs.compose.navigation)
+
+            implementation(libs.coil)
+            implementation(libs.coil.network)
         }
 
         desktopMain.dependencies {

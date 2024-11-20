@@ -6,13 +6,12 @@ import androidx.compose.ui.graphics.Color
 
 @Stable
 class ColorStyle(
-    primary: Color,
-    divider: Color,
-) {
-    val primary = primary
-    val divider = divider
-}
+    val primary: Color,
+    val divider: Color,
+    val background: Color,
+    val placeholder: Color,
+)
 
-val mainColorStyle = ColorStyle(Color.Black, Color.Black.copy(alpha = 0.4f))
+val mainColorStyle = ColorStyle(primary = Color.Black, divider = Color.Black.copy(alpha = 0.2f), background = Color.White, placeholder = Color.Black.copy(alpha = 0.6f))
 
 val LocalColorStyle = staticCompositionLocalOf<ColorStyle> { error("No ColorScheme provided") }

@@ -1,10 +1,11 @@
-package com.xetom.wancool.page.dog.ui
+package com.xetom.wancool.page.dog.home_list.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,15 +15,14 @@ import com.xetom.wancool.style.LocalColorStyle
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-fun DogListScreen(modifier: Modifier = Modifier, dogs: ImmutableList<String>) {
+fun DogListScreen(modifier: Modifier = Modifier, dogs: ImmutableList<String>, onClick: (Int) -> Unit) {
     Box(modifier = modifier) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-
-            ) {
-            items(items = dogs) {
+            modifier = Modifier.fillMaxSize()
+        ) {
+            itemsIndexed(items = dogs) { index, it ->
                 Column(modifier = Modifier.clickable {
-
+                    onClick.invoke(index)
                 }) {
                     Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
                         Text(text = it, color = LocalColorStyle.current.primary, fontSize = 18.sp)
