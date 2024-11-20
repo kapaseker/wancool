@@ -13,7 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.xetom.wancool.style.LocalColorStyle
+import com.xetom.wancool.resource.LocalColorStyle
+import com.xetom.wancool.resource.LocalDimensionStyle
 import org.jetbrains.compose.resources.painterResource
 import wancool.composeapp.generated.resources.Res
 import wancool.composeapp.generated.resources.arrow_left
@@ -26,9 +27,7 @@ fun TitleBar(
     val onBackState by rememberUpdatedState(onBack)
 
     Box(
-        modifier = modifier.fillMaxWidth().height(54.dp).blurShadow(
-            0f, 0f, color = LocalColorStyle.current.divider, blurRadius = 8f
-        ).drawBackground(LocalColorStyle.current.background)
+        modifier = modifier.fillMaxWidth().height(LocalDimensionStyle.current.titleBar).titleBarShadow().drawBackground(LocalColorStyle.current.background)
     ) {
         Text(
             text = title, fontSize = 28.sp, color = LocalColorStyle.current.primary, modifier = Modifier.align(Alignment.Center)

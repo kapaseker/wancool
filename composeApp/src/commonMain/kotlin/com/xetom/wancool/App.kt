@@ -13,8 +13,9 @@ import com.xetom.wancool.nav.HomeNav
 import com.xetom.wancool.nav.composablePage
 import com.xetom.wancool.page.dog.main.ui.DogPage
 import com.xetom.wancool.page.home.ui.HomePage
-import com.xetom.wancool.style.LocalColorStyle
-import com.xetom.wancool.style.Style
+import com.xetom.wancool.resource.LocalColorStyle
+import com.xetom.wancool.resource.LocalDimensionStyle
+import com.xetom.wancool.resource.Style
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
@@ -27,6 +28,7 @@ fun App() {
 
     MaterialTheme {
         CompositionLocalProvider(
+            LocalDimensionStyle provides Style.dimension,
             LocalColorStyle provides Style.color,
             LocalNavController provides navController,
         ) {

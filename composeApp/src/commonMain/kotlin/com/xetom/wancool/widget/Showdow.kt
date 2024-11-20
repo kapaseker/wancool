@@ -1,13 +1,20 @@
 package com.xetom.wancool.widget
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
+import com.xetom.wancool.resource.LocalColorStyle
 import org.jetbrains.skia.FilterBlurMode
 import org.jetbrains.skia.MaskFilter
+
+@Composable
+fun Modifier.titleBarShadow() = this.blurShadow(
+    0f, 0f, color = LocalColorStyle.current.divider, blurRadius = 8f
+)
 
 fun Modifier.blurShadow(
     offsetX: Float = 0f,

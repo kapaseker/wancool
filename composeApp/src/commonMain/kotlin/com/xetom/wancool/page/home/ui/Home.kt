@@ -27,7 +27,10 @@ import com.xetom.wancool.load.isLoading
 import com.xetom.wancool.nav.DogNav
 import com.xetom.wancool.page.dog.home_list.ui.DogListScreen
 import com.xetom.wancool.page.home.business.HomeViewModel
-import com.xetom.wancool.style.LocalColorStyle
+import com.xetom.wancool.resource.LocalColorStyle
+import com.xetom.wancool.resource.LocalDimensionStyle
+import com.xetom.wancool.widget.drawBackground
+import com.xetom.wancool.widget.titleBarShadow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -58,15 +61,13 @@ fun HomePage(
     val ip by home.ip.collectAsState()
     val breeds by home.breeds.collectAsState()
 
-    Column {
-        Row(modifier = Modifier.height(48.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.height(LocalDimensionStyle.current.titleBar).titleBarShadow().drawBackground(LocalColorStyle.current.background)) {
             if (columns.isNotEmpty()) {
                 TabRow(
-                    selectedTabIndex = selectTab,
-                    modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(),
-                    backgroundColor = Color.Transparent,
-                    contentColor = Color.Black,
-                ) {
+                    selectedTabIndex = selectTab, modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(), backgroundColor = Color.Transparent, contentColor = Color.Black, divider = {
+
+                    }) {
                     columns.withIndex().forEach {
                         Tab(selectTab == it.index, text = {
                             Text(text = it.value, color = LocalColorStyle.current.primary)
@@ -93,70 +94,64 @@ fun HomePage(
         val dogListState = rememberLazyListState()
         val navController = LocalNavController.current
 
-        fun goDogPage(main: String,sub: String) {
+        fun goDogPage(main: String, sub: String) {
             navController.navigate(DogNav.make(DogNav.Arg(main, sub)))
         }
 
-        when (selectTab) {
+        Box(modifier = Modifier.fillMaxSize().padding(LocalDimensionStyle.current.pagePadding)) {
+            when (selectTab) {
 
             0 -> {
+                if (breeds.load.isLoading()) {
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    if (breeds.load.isLoading()) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(0.4f).height(4.dp).align(Alignment.Center), color = LocalColorStyle.current.primary)
 
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(0.4f).height(4.dp).align(Alignment.Center), color = LocalColorStyle.current.primary)
+                } else {
 
-                    } else {
+                    Row(modifier = Modifier.fillMaxSize()) {
 
-                        Row(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(modifier = Modifier.weight(1f).fillMaxSize(), state = dogListState) {
+                            itemsIndexed(items = breeds.breeds.keys.toList()) { index, it ->
+                                Column(modifier = Modifier.height(48.dp).fillMaxWidth().clickable {
 
-                            LazyColumn(modifier = Modifier.weight(1f).fillMaxSize(), state = dogListState) {
-                                itemsIndexed(items = breeds.breeds.keys.toList()) { index, it ->
-                                    Column(modifier = Modifier.height(48.dp).fillMaxWidth().clickable {
+                                    dogSelectIndex = index
+                                    dogSelectedMainBreed = it
 
-                                        dogSelectIndex = index
-                                        dogSelectedMainBreed = it
-
-                                        breeds.breeds[it].takeIf { it != null && it.isNotEmpty() }?.let { items ->
-                                            dogsList = items.toImmutableList()
-                                        } ?: run {
-                                            goDogPage(main = it, sub = "")
-                                        }
-                                    }) {
-                                        Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp)) {
-
-                                            Text(
-                                                text = it,
-                                                color = LocalColorStyle.current.primary,
-                                                fontSize = 24.sp,
-                                                modifier = Modifier.align(Alignment.CenterStart)
-                                            )
-
-                                            if (dogSelectIndex == index) {
-                                                Image(
-                                                    painter = painterResource(Res.drawable.dog_bone),
-                                                    modifier = Modifier.size(32.dp).align(Alignment.CenterEnd),
-                                                    contentDescription = null
-                                                )
-                                            }
-                                        }
-                                        Spacer(
-                                            modifier = Modifier.fillMaxWidth().height(1.dp).padding(horizontal = 16.dp).background(LocalColorStyle.current.divider)
-                                        )
+                                    breeds.breeds[it].takeIf { it != null && it.isNotEmpty() }?.let { items ->
+                                        dogsList = items.toImmutableList()
+                                    } ?: run {
+                                        goDogPage(main = it, sub = "")
                                     }
+                                }) {
+                                    Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp)) {
+
+                                        Text(
+                                            text = it, color = LocalColorStyle.current.primary, fontSize = 24.sp, modifier = Modifier.align(Alignment.CenterStart)
+                                        )
+
+                                        if (dogSelectIndex == index) {
+                                            Image(
+                                                painter = painterResource(Res.drawable.dog_bone), modifier = Modifier.size(32.dp).align(Alignment.CenterEnd), contentDescription = null
+                                            )
+                                        }
+                                    }
+                                    Spacer(
+                                        modifier = Modifier.fillMaxWidth().height(1.dp).padding(horizontal = 16.dp).background(LocalColorStyle.current.divider)
+                                    )
                                 }
                             }
+                        }
 
-                            if (dogsList.isNotEmpty()) {
-                                Spacer(modifier = Modifier.width(2.dp).fillMaxHeight().background(LocalColorStyle.current.divider))
-                                DogListScreen(modifier = Modifier.weight(2f).fillMaxSize(), dogs = dogsList) {
-                                    goDogPage(main = dogSelectedMainBreed, sub = dogsList[it])
-                                }
+                        if (dogsList.isNotEmpty()) {
+                            Spacer(modifier = Modifier.width(2.dp).fillMaxHeight().background(LocalColorStyle.current.divider))
+                            DogListScreen(modifier = Modifier.weight(2f).fillMaxSize(), dogs = dogsList) {
+                                goDogPage(main = dogSelectedMainBreed, sub = dogsList[it])
                             }
                         }
                     }
                 }
             }
+        }
         }
     }
 }

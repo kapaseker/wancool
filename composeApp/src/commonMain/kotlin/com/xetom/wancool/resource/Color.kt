@@ -1,4 +1,4 @@
-package com.xetom.wancool.style
+package com.xetom.wancool.resource
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
