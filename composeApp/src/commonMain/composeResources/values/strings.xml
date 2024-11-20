@@ -5,4 +5,7 @@
         <item>Cat</item>
         <item>Picture</item>
     </string-array>
+
+    <string name="go_left">go left</string>
+    <string name="go_right">go right</string>
 </resources>

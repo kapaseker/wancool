@@ -10,8 +10,17 @@ class ColorStyle(
     val divider: Color,
     val background: Color,
     val placeholder: Color,
+    val dialogBackground: Color,
+    val iconBackground: Color,
 )
 
-val mainColorStyle = ColorStyle(primary = Color.Black, divider = Color.Black.copy(alpha = 0.2f), background = Color.White, placeholder = Color.Black.copy(alpha = 0.6f))
+val mainColorStyle = ColorStyle(
+    primary = Color.Black,
+    divider = Color.Black.copy(alpha = 0.2f),
+    background = Color.White,
+    placeholder = Color.Black.copy(alpha = 0.6f),
+    dialogBackground = Color.Black.copy(alpha = 0.68f),
+    iconBackground = Color(0xFF6B7280),
+)
 
 val LocalColorStyle = staticCompositionLocalOf<ColorStyle> { error("No ColorScheme provided") }
