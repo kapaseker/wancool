@@ -9,8 +9,9 @@ import androidx.compose.ui.unit.dp
 class DimensionStyle(
     val titleBar: Dp,
     val pagePadding: Dp,
+    val listItemPadding:Dp
 )
 
-val mainDimensionStyle = DimensionStyle(titleBar = 54.dp, pagePadding = 10.dp)
+val mainDimensionStyle = DimensionStyle(titleBar = 54.dp, pagePadding = 10.dp, listItemPadding = 16.dp)
 
 val LocalDimensionStyle = staticCompositionLocalOf<DimensionStyle> { error("No ColorScheme provided") }

@@ -2,6 +2,8 @@ package com.xetom.wancool.page.home.business
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xetom.wancool.api.CatApi
+import com.xetom.wancool.api.CatBreed
 import com.xetom.wancool.api.DogApi
 import com.xetom.wancool.api.IpApi
 import com.xetom.wancool.load.LoadData
@@ -17,9 +19,14 @@ import wancool.composeapp.generated.resources.Res
 import wancool.composeapp.generated.resources.home_columns
 
 
-data class BreedUIState(
+data class DogBreedUIState(
     val load: LoadData,
     val breeds: ImmutableMap<String, Array<String>>,
+)
+
+data class CatBreedUIState(
+    val load: LoadData,
+    val breeds: ImmutableList<CatBreed>,
 )
 
 class HomeViewModel : ViewModel() {
@@ -27,8 +34,11 @@ class HomeViewModel : ViewModel() {
     private val _ip = MutableStateFlow("")
     val ip: StateFlow<String> = _ip.asStateFlow()
 
-    private val _breeds = MutableStateFlow<BreedUIState>(BreedUIState(LoadData.ofLoading(), persistentMapOf()))
-    val breeds: StateFlow<BreedUIState> = _breeds.asStateFlow()
+    private val _dogBreeds = MutableStateFlow<DogBreedUIState>(DogBreedUIState(LoadData.ofLoading(), persistentMapOf()))
+    val dogBreeds: StateFlow<DogBreedUIState> = _dogBreeds.asStateFlow()
+
+    private val _catBreeds = MutableStateFlow(CatBreedUIState(LoadData.ofLoading(), persistentListOf()))
+    val catBreeds: StateFlow<CatBreedUIState> = _catBreeds.asStateFlow()
 
     private val _columns = MutableStateFlow<ImmutableList<String>>(persistentListOf())
     val columns: StateFlow<ImmutableList<String>> = _columns.asStateFlow()
@@ -41,9 +51,16 @@ class HomeViewModel : ViewModel() {
             _ip.update { IpApi.currentIp() }
         }
         viewModelScope.launch(Dispatchers.Default) {
-            _breeds.update { BreedUIState(LoadData.ofLoading(), persistentMapOf()) }
+            _dogBreeds.update { DogBreedUIState(LoadData.ofLoading(), persistentMapOf()) }
             DogApi.breeds().let { (r, v) ->
-                _breeds.update { BreedUIState(LoadData.ofComplete(r), v.toImmutableMap()) }
+                _dogBreeds.update { DogBreedUIState(LoadData.ofComplete(r), v.toImmutableMap()) }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            _catBreeds.update { CatBreedUIState(LoadData.ofLoading(), persistentListOf()) }
+            CatApi.breeds().let { (r, v) ->
+                _catBreeds.update { CatBreedUIState(LoadData.ofComplete(r), v.toImmutableList()) }
             }
         }
     }
