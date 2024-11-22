@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 private const val CAT_URL = "https://api.thecatapi.com/v1/"
-
+private const val KEY = "live_XBl3KG5gkXiGo5muxgHxCO2HuzphOCphU0UFMCwrBywhYNb3wa0IdRV84uKwdJG5"
 @Serializable
 data class CatBreed(
     val weight: Weight,
@@ -79,7 +79,7 @@ object CatApi {
         val response = client.get("${CAT_URL}breeds?limit=1000&page=0") {
             headers {
                 append("Content-Type", "application/json")
-                append("x-api-key", "live_XBl3KG5gkXiGo5muxgHxCO2HuzphOCphU0UFMCwrBywhYNb3wa0IdRV84uKwdJG5")
+                append("x-api-key", KEY)
             }
         }
         if (response.isOk()) {

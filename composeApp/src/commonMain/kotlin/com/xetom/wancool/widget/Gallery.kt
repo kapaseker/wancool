@@ -57,23 +57,27 @@ fun Gallery(
             OnlineImage(url = images[index], contentDescription = null, modifier = Modifier.fillMaxSize())
         }
 
-        Image(
-            painter = painterResource(Res.drawable.chevron_left),
-            contentDescription = null,
-            modifier = Modifier.padding(start = LocalDimensionStyle.current.pagePadding).size(68.dp).clip(CircleShape).align(androidx.compose.ui.Alignment.CenterStart)
-                .drawBackground(LocalColorStyle.current.iconBackground).clickable {
-                    goPage(pagerState.currentPage - 1)
-                }.padding(16.dp)
-        )
+        if (selectPage > 0) {
+            Image(
+                painter = painterResource(Res.drawable.chevron_left),
+                contentDescription = null,
+                modifier = Modifier.padding(start = LocalDimensionStyle.current.pagePadding).size(68.dp).clip(CircleShape).align(androidx.compose.ui.Alignment.CenterStart)
+                    .drawBackground(LocalColorStyle.current.iconBackground).clickable {
+                        goPage(pagerState.currentPage - 1)
+                    }.padding(16.dp)
+            )
+        }
 
-        Image(
-            painter = painterResource(Res.drawable.chevron_right),
-            contentDescription = null,
-            modifier = Modifier.padding(end = LocalDimensionStyle.current.pagePadding).size(68.dp).clip(CircleShape).align(androidx.compose.ui.Alignment.CenterEnd)
-                .drawBackground(LocalColorStyle.current.iconBackground).clickable {
-                    goPage(pagerState.currentPage + 1)
-                }.padding(16.dp)
-        )
+        if (selectPage < images.lastIndex) {
+            Image(
+                painter = painterResource(Res.drawable.chevron_right),
+                contentDescription = null,
+                modifier = Modifier.padding(end = LocalDimensionStyle.current.pagePadding).size(68.dp).clip(CircleShape).align(androidx.compose.ui.Alignment.CenterEnd)
+                    .drawBackground(LocalColorStyle.current.iconBackground).clickable {
+                        goPage(pagerState.currentPage + 1)
+                    }.padding(16.dp)
+            )
+        }
 
         Image(
             painter = painterResource(Res.drawable.close),

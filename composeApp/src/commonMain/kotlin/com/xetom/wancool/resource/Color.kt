@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 @Stable
 class ColorStyle(
     val primary: Color,
+    val description: Color,
     val divider: Color,
     val background: Color,
     val placeholder: Color,
@@ -16,6 +17,7 @@ class ColorStyle(
 
 val mainColorStyle = ColorStyle(
     primary = Color.Black,
+    description = Color.Black.copy(0.7f),
     divider = Color.Black.copy(alpha = 0.2f),
     background = Color.White,
     placeholder = Color.Black.copy(alpha = 0.6f),
