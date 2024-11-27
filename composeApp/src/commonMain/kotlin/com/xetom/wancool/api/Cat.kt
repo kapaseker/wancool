@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 
 private const val CAT_URL = "https://api.thecatapi.com/v1/"
 private const val KEY = "live_XBl3KG5gkXiGo5muxgHxCO2HuzphOCphU0UFMCwrBywhYNb3wa0IdRV84uKwdJG5"
+
 @Serializable
 data class CatBreed(
     val weight: Weight,
@@ -54,7 +55,7 @@ data class CatBreed(
     @SerialName("wikipedia_url") val wikipediaUrl: String = "",
     val hypoallergenic: Int,
     @SerialName("reference_image_id") val referenceImageId: String = "",
-    val image: Image ? = null,
+    val image: Image? = null,
 )
 
 @Serializable
@@ -73,7 +74,8 @@ data class Image(
 
 object CatApi {
 
-    val client = getHttpClient()
+    private val client = getHttpClient()
+    private val json = Json { ignoreUnknownKeys = true }
 
     suspend fun breeds(): Pair<LoadData.Result, List<CatBreed>> {
         val response = client.get("${CAT_URL}breeds?limit=1000&page=0") {
@@ -83,9 +85,7 @@ object CatApi {
             }
         }
         if (response.isOk()) {
-            val breed = Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<List<CatBreed>>(response.bodyAsText())
+            val breed = json.decodeFromString<List<CatBreed>>(response.bodyAsText())
             return LoadData.Success to breed
         }
         return LoadData.Error to emptyList()

@@ -2,10 +2,7 @@ package com.xetom.wancool.page.home.business
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.xetom.wancool.api.CatApi
-import com.xetom.wancool.api.CatBreed
-import com.xetom.wancool.api.DogApi
-import com.xetom.wancool.api.IpApi
+import com.xetom.wancool.api.*
 import com.xetom.wancool.load.LoadData
 import kotlinx.collections.immutable.*
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +26,11 @@ data class CatBreedUIState(
     val breeds: ImmutableList<CatBreed>,
 )
 
+data class PictureUIState(
+    val load: LoadData,
+    val breeds: ImmutableList<PicsumItem>,
+)
+
 class HomeViewModel : ViewModel() {
 
     private val _ip = MutableStateFlow("")
@@ -42,6 +44,9 @@ class HomeViewModel : ViewModel() {
 
     private val _columns = MutableStateFlow<ImmutableList<String>>(persistentListOf())
     val columns: StateFlow<ImmutableList<String>> = _columns.asStateFlow()
+
+    private val _picture = MutableStateFlow(PictureUIState(LoadData.ofLoading(), persistentListOf()))
+    val picture: StateFlow<PictureUIState> = _picture.asStateFlow()
 
     private fun loadHomeData() {
         viewModelScope.launch(Dispatchers.Default) {
@@ -61,6 +66,13 @@ class HomeViewModel : ViewModel() {
             _catBreeds.update { CatBreedUIState(LoadData.ofLoading(), persistentListOf()) }
             CatApi.breeds().let { (r, v) ->
                 _catBreeds.update { CatBreedUIState(LoadData.ofComplete(r), v.toImmutableList()) }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            _picture.update { PictureUIState(LoadData.ofLoading(), persistentListOf()) }
+            PicsumApi.list(1, 100).let { (r, v) ->
+                _picture.update { PictureUIState(LoadData.ofComplete(r), v.toImmutableList()) }
             }
         }
     }

@@ -1,5 +1,8 @@
 package com.xetom.wancool.page.home.ui
 
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -70,6 +73,7 @@ fun HomePage(
     val ip by home.ip.collectAsState()
     val dogBreeds by home.dogBreeds.collectAsState()
     val catBreeds by home.catBreeds.collectAsState()
+    val pictures by home.picture.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.height(LocalDimensionStyle.current.titleBar).titleBarShadow().drawBackground(LocalColorStyle.current.background)) {
@@ -243,6 +247,29 @@ fun HomePage(
                         if (showCat) {
                             Gallery(modifier = Modifier.fillMaxSize(), images = persistentListOf(catImage)) {
                                 catImage = ""
+                            }
+                        }
+                    }
+                }
+
+                2 -> {
+                    if (pictures.load.isLoading()) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(0.4f).height(4.dp).align(Alignment.Center), color = LocalColorStyle.current.primary)
+                    } else {
+                        LazyVerticalGrid(
+                            modifier = Modifier.fillMaxSize().padding(LocalDimensionStyle.current.pagePadding),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            columns = GridCells.Adaptive(minSize = 480.dp)
+                        ) {
+                            itemsIndexed(pictures.breeds) { index, it ->
+                                OnlineImage(
+                                    url = it.downloadUrl,
+                                    modifier = Modifier.fillMaxWidth().aspectRatio(1f).clickable {
+
+                                    },
+                                    contentScale = ContentScale.Crop,
+                                )
                             }
                         }
                     }
