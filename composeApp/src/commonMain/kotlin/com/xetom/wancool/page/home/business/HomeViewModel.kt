@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xetom.wancool.api.*
 import com.xetom.wancool.load.LoadData
+import com.xetom.wancool.load.isLoading
 import kotlinx.collections.immutable.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,24 +32,69 @@ data class PictureUIState(
     val breeds: ImmutableList<PicsumItem>,
 )
 
+data class NarutoUIState(
+    val load: LoadData,
+    val narutos: ImmutableList<Character>,
+)
+
+
+sealed interface HomeIntent {
+    data object MoreNaruto : HomeIntent
+}
+
 class HomeViewModel : ViewModel() {
 
     private val _ip = MutableStateFlow("")
     val ip: StateFlow<String> = _ip.asStateFlow()
 
-    private val _dogBreeds = MutableStateFlow<DogBreedUIState>(DogBreedUIState(LoadData.ofLoading(), persistentMapOf()))
+    private val _dogBreeds = MutableStateFlow<DogBreedUIState>(DogBreedUIState(LoadData.ofSuccess(), persistentMapOf()))
     val dogBreeds: StateFlow<DogBreedUIState> = _dogBreeds.asStateFlow()
 
-    private val _catBreeds = MutableStateFlow(CatBreedUIState(LoadData.ofLoading(), persistentListOf()))
+    private val _catBreeds = MutableStateFlow(CatBreedUIState(LoadData.ofSuccess(), persistentListOf()))
     val catBreeds: StateFlow<CatBreedUIState> = _catBreeds.asStateFlow()
 
     private val _columns = MutableStateFlow<ImmutableList<String>>(persistentListOf())
     val columns: StateFlow<ImmutableList<String>> = _columns.asStateFlow()
 
-    private val _picture = MutableStateFlow(PictureUIState(LoadData.ofLoading(), persistentListOf()))
+    private val _picture = MutableStateFlow(PictureUIState(LoadData.ofSuccess(), persistentListOf()))
     val picture: StateFlow<PictureUIState> = _picture.asStateFlow()
 
+    private var narutoPage: Int = 1;
+
+    private val _narutos = MutableStateFlow(NarutoUIState(LoadData.ofSuccess(), persistentListOf()))
+    val narutos: StateFlow<NarutoUIState> = _narutos.asStateFlow()
+
+    infix fun want(intent: HomeIntent) {
+        when (intent) {
+            HomeIntent.MoreNaruto -> {
+                moreNaruto()
+            }
+        }
+    }
+
+    private fun moreNaruto() {
+        if (!_narutos.value.load.isLoading()) {
+
+            val reset = narutoPage == 1
+
+            viewModelScope.launch(Dispatchers.Default) {
+
+                _narutos.update { NarutoUIState(LoadData.ofLoading(), it.narutos) }
+
+                NarutoApi.characters(narutoPage, 50).let { (r, v) ->
+                    narutoPage++
+                    if (reset) {
+                        _narutos.update { NarutoUIState(LoadData.ofComplete(r), v.characters.toImmutableList()) }
+                    } else {
+                        _narutos.update { NarutoUIState(LoadData.ofComplete(r), (it.narutos + v.characters).toImmutableList()) }
+                    }
+                }
+            }
+        }
+    }
+
     private fun loadHomeData() {
+
         viewModelScope.launch(Dispatchers.Default) {
             getStringArray(Res.array.home_columns).let { res ->
                 _columns.update { res.toImmutableList() }
@@ -71,10 +117,13 @@ class HomeViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.Default) {
             _picture.update { PictureUIState(LoadData.ofLoading(), persistentListOf()) }
-            PicsumApi.list(1, 100).let { (r, v) ->
+            PicsumApi.list(1, 50).let { (r, v) ->
                 _picture.update { PictureUIState(LoadData.ofComplete(r), v.toImmutableList()) }
             }
         }
+
+        narutoPage = 1
+        moreNaruto()
     }
 
     init {

@@ -19,7 +19,7 @@ data class Dogs(val message: Array<String>, val status: String)
 
 object DogApi {
 
-    val client = getHttpClient()
+    private val client = getHttpClient()
 
     suspend fun breeds(): Pair<LoadData.Result, Map<String, Array<String>>> {
         val response = client.get("${DOG_URL}breeds/list/all")

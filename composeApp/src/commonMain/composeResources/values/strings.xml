@@ -3,7 +3,8 @@
     <string-array name="home_columns">
         <item>Dog</item>
         <item>Cat</item>
-        <item>Picsum</item>
+        <item>Picture</item>
+        <item>Naruto</item>
     </string-array>
 
     <string name="go_left">go left</string>
