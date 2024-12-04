@@ -19,6 +19,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xetom.wancool.LocalNavController
 import com.xetom.wancool.load.isLoading
 import com.xetom.wancool.nav.DogNav
+import com.xetom.wancool.nav.EmptyArg
+import com.xetom.wancool.nav.LibraryNav
 import com.xetom.wancool.page.cat.ui.breeds.CatBreeds
 import com.xetom.wancool.page.dog.breeds.ui.DogBreeds
 import com.xetom.wancool.page.home.business.HomeIntent
@@ -59,37 +61,53 @@ fun HomePage(
     val pictures by home.picture.collectAsState()
     val narutos by home.narutos.collectAsState()
 
+    val navController = LocalNavController.current
+
+    fun goLibrary() {
+        navController.navigate(LibraryNav.make(EmptyArg))
+    }
+
+    fun goDogPage(main: String, sub: String) {
+        navController.navigate(DogNav.make(DogNav.Arg(main, sub)))
+    }
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.height(LocalDimensionStyle.current.titleBar).titleBarShadow().drawBackground(LocalColorStyle.current.background)) {
             if (columns.isNotEmpty()) {
                 TabRow(
-                    selectedTabIndex = selectTab, modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(), backgroundColor = Color.Transparent, contentColor = Color.Black, divider = {
+                    selectedTabIndex = selectTab,
+                    modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(),
+                    backgroundColor = Color.Transparent,
+                    contentColor = Color.Black,
+                    divider = {
 
-                    }) {
+                    }
+                ) {
                     columns.withIndex().forEach {
-                        Tab(selectTab == it.index, text = {
-                            Text(text = it.value, color = LocalColorStyle.current.primary)
-                        }, onClick = {
-                            selectTab = it.index
-                        })
+                        Tab(
+                            selected = selectTab == it.index,
+                            text = {
+                                Text(
+                                    text = it.value,
+                                    color = LocalColorStyle.current.primary
+                                )
+                            },
+                            onClick = {
+                                selectTab = it.index
+                            }
+                        )
                     }
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
             Image(
                 modifier = Modifier.fillMaxHeight().aspectRatio(1f).clip(CircleShape).clickable {
-
+                    goLibrary()
                 }.padding(14.dp),
                 painter = painterResource(Res.drawable.three_dots),
                 contentDescription = null,
             )
-        }
-
-
-        val navController = LocalNavController.current
-
-        fun goDogPage(main: String, sub: String) {
-            navController.navigate(DogNav.make(DogNav.Arg(main, sub)))
         }
 
         Box(modifier = Modifier.fillMaxSize().padding(LocalDimensionStyle.current.pagePadding)) {
@@ -135,7 +153,10 @@ fun BoxScope.HomeBreeds(
     loading: Boolean, screen: @Composable () -> Unit
 ) {
     if (loading) {
-        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(0.4f).height(4.dp).align(Alignment.Center), color = LocalColorStyle.current.primary)
+        LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth(0.4f).height(4.dp).align(Alignment.Center),
+            color = LocalColorStyle.current.primary
+        )
     } else {
         screen()
     }

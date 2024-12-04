@@ -51,6 +51,11 @@ object HomeNav : BaseEmptyArgNavPath() {
         get() = "home"
 }
 
+object LibraryNav : BaseEmptyArgNavPath() {
+    override val path: String
+        get() = "library"
+}
+
 object DogNav : INavPath<Arg> {
 
     data class Arg(

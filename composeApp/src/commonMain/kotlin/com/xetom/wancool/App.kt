@@ -10,9 +10,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.xetom.wancool.nav.DogNav
 import com.xetom.wancool.nav.HomeNav
+import com.xetom.wancool.nav.LibraryNav
 import com.xetom.wancool.nav.composablePage
 import com.xetom.wancool.page.dog.main.ui.DogPage
 import com.xetom.wancool.page.home.ui.HomePage
+import com.xetom.wancool.page.library.ui.library.LibraryPage
 import com.xetom.wancool.resource.LocalColorStyle
 import com.xetom.wancool.resource.LocalDimensionStyle
 import com.xetom.wancool.resource.Style
@@ -41,6 +43,9 @@ fun App() {
                 }
                 composablePage(DogNav) {
                     DogPage(it)
+                }
+                composablePage(LibraryNav) {
+                    LibraryPage()
                 }
             }
         }
