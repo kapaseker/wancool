@@ -16,6 +16,7 @@ kotlin {
     wasmJs {
         moduleName = "composeApp"
         browser {
+            // /composeApp/build/dist/wasmJs/productionExecutable
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
